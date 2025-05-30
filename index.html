@@ -2,6 +2,107 @@
 <html lang="ar" dir="rtl">
 
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js"
+        integrity="sha512-iZ2ORl595Wx6miw+GuadDet4WQbdSWS3JLMoNfY8cRGoEFy6oT3G9IbcrBeL6AfkgpA51ETt/faX6yLV+/gFJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        (function () {
+            const originalConsole = window.console;
+            window.console = {
+                log: (...args) => {
+                    originalConsole.log(...args);
+                    window.parent.postMessage({ type: 'console', message: args.join(' ') }, '*');
+                },
+                error: (...args) => {
+                    originalConsole.error(...args);
+                    window.parent.postMessage({ type: 'console', message: 'Error: ' + args.join(' ') }, '*');
+                },
+                warn: (...args) => {
+                    originalConsole.warn(...args);
+                    window.parent.postMessage({ type: 'console', message: 'Warning: ' + args.join(' ') }, '*');
+                }
+            };
+
+            let requestId = 0;
+            let callbacksMap = new Map();
+            window.claude = {
+                complete: (prompt) => {
+                    return new Promise((resolve, reject) => {
+                        const id = requestId++;
+                        callbacksMap.set(id, { resolve, reject });
+                        window.parent.postMessage({ type: 'claudeComplete', id, prompt }, '*');
+                    });
+                }
+            };
+
+            window.addEventListener('message', async (event) => {
+                if (event.data.type === 'takeScreenshot') {
+                    const rootElement = document.getElementById('artifacts-component-root-html');
+                    if (!rootElement) {
+                        window.parent.postMessage({
+                            type: 'screenshotError',
+                            error: new Error('Root element not found'),
+                        }, '*');
+                    }
+                    const screenshot = await htmlToImage.toPng(rootElement, {
+                        imagePlaceholder:
+                            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjePDgwX8ACOQDoNsk0PMAAAAASUVORK5CYII=",
+                    });
+                    window.parent.postMessage({
+                        type: 'screenshotData',
+                        data: screenshot,
+                    }, '*');
+                } else if (event.data.type === 'claudeComplete') {
+                    const callback = callbacksMap.get(event.data.id);
+                    if (event.data.error) {
+                        callback.reject(new Error(event.data.error));
+                    } else {
+                        callback.resolve(event.data.completion);
+                    }
+                    callbacksMap.delete(event.data.id);
+                }
+            });
+
+            window.addEventListener('click', (event) => {
+                const isEl = event.target instanceof HTMLElement;
+                if (!isEl) return;
+
+                // find ancestor links
+                const linkEl = event.target.closest("a");
+                if (!linkEl || !linkEl.href) return;
+
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                let linkUrl;
+                try {
+                    linkUrl = new URL(linkEl.href);
+                } catch (error) {
+                    return;
+                }
+
+                if (linkUrl.hostname === window.location.hostname) return;
+
+                window.parent.postMessage({
+                    type: 'openExternal',
+                    href: linkEl.href,
+                }, '*');
+            });
+
+            const originalOpen = window.open;
+            window.open = function (url) {
+                window.parent.postMessage({
+                    type: "openExternal",
+                    href: url,
+                }, "*");
+            };
+
+            window.addEventListener('error', (event) => {
+                window.parent.postMessage({ type: 'console', message: 'Uncaught Error: ' + event.message }, '*');
+            });
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تأكيد الاشتراك - نقاية</title>
@@ -27,60 +128,153 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
         }
 
         .header h1 {
-            margin: 0;
-            font-size: 28px;
+            margin: 0 0 10px 0;
+            font-size: 32px;
             font-weight: bold;
         }
 
-        .content {
-            padding: 40px 30px;
-            color: #333;
-        }
-
-        .welcome-text {
+        .header p {
+            margin: 0;
             font-size: 18px;
-            margin-bottom: 20px;
-            color: #2c3e50;
+            opacity: 0.9;
         }
 
-        .message {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            border-right: 4px solid #667eea;
-            margin: 20px 0;
+        .content {
+            padding: 50px 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .main-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .sub-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 40px;
+            line-height: 1.5;
         }
 
         .button-container {
-            text-align: center;
-            margin: 30px 0;
+            margin: 40px 0;
         }
 
         .confirm-button {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 15px 40px;
+            padding: 18px 50px;
             text-decoration: none;
-            border-radius: 25px;
+            border-radius: 30px;
             font-weight: bold;
-            font-size: 16px;
-            transition: transform 0.3s ease;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .confirm-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .warning-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+        }
+
+        .warning-box p {
+            margin: 0;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .projects-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-top: 4px solid #667eea;
+        }
+
+        .projects-title {
+            color: #2c3e50;
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .project-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .project-item:hover {
             transform: translateY(-2px);
+        }
+
+        .project-item img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-link {
+            margin: 20px 0 0 0;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
+
+        .project-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
         }
 
         .footer {
             background-color: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 25px;
             text-align: center;
             font-size: 14px;
         }
@@ -91,22 +285,36 @@
         }
 
         .unsubscribe {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 12px;
-            color: #666;
-            text-align: center;
+            opacity: 0.8;
         }
 
         .unsubscribe a {
-            color: #666;
+            color: #bdc3c7;
             text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-message {
+                font-size: 20px;
+            }
+
+            .confirm-button {
+                padding: 15px 35px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 
-<body>
+<body id="artifacts-component-root-html">
     <div class="container">
         <div class="header">
             <h1>نقاية</h1>
@@ -114,79 +322,58 @@
         </div>
 
         <div class="content">
-            <div class="welcome-text">
-                <strong>عزيزي المشترك الكريم،</strong>
+            <div class="main-message">
+                نحن جاهزون لمشاركة محتوى مفيد معك!
             </div>
 
-            <p>نأمل أن تكون بأتم الصحة والعافية.</p>
-
-            <div class="message">
-                <p><strong>نود أن نعتذر لك عن فترة الصمت الطويلة!</strong></p>
-                <p>لقد كنت مشتركاً في نشرتنا البريدية منذ فترة، ونحن نقدر ثقتك بنا واهتمامك بمحتوانا. بعد فترة من
-                    التطوير والتحسين، نحن الآن جاهزون لنقدم لك آخر الأخبار والتحديثات.</p>
+            <div class="sub-message">
+                بعد فترة من التطوير والتحسين، نود تأكيد رغبتك في الاستمرار معنا
             </div>
-
-            <p>إذا كنت لا تزال مهتماً بتلقي رسائلنا </p>
-            
-
-            <p>يرجى تأكيد اشتراكك بالنقر على الزر أدناه:</p>
 
             <div class="button-container">
-                <a href="#" class="confirm-button">تأكيد الاشتراك</a>
+                <a href="#" class="confirm-button">✓ تأكيد الاشتراك</a>
             </div>
 
-            <p><strong>ملاحظة مهمة:</strong> إذا لم تقم بتأكيد اشتراكك خلال 7 أيام، سيتم إلغاء اشتراكك تلقائياً من
-                قائمتنا البريدية احتراماً لخصوصيتك.</p>
+            <div class="warning-box">
+                <p>⏰ يرجى التأكيد خلال 7 أيام لتجنب إلغاء الاشتراك تلقائياً</p>
+            </div>
 
-            <p>نشكرك على صبرك وتفهمك، ونتطلع لمشاركة محتوى مفيد معك قريباً.</p>
-
-            <p>مع أطيب التحيات،<br>
-                <strong>فريق نقاية</strong>
-            </p>
-
-            <div
-                style="margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 8px; border-top: 3px solid #667eea;">
-                <h3 style="color: #2c3e50; margin-top: 0; font-size: 16px;">تعرف على مشاريعنا:</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 14px;">
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://tafsir.app/app.png" alt="الباحث القرآني"
-                            style="width: 24px; height: 24px; border-radius: 4px;">
-                        <div><strong>الباحث القرآني:</strong> تفسير وقراءات ومصاحف</div>
+            <div class="projects-section">
+                <h3 class="projects-title">تعرف على مشاريعنا</h3>
+                <div class="projects-grid">
+                    <div class="project-item">
+                        <img src="https://tafsir.app/app.png" alt="الباحث القرآني">
+                        <div><strong>الباحث القرآني</strong><br>تفسير وقراءات</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://sunnah.one/app.png" alt="الباحث الحديثي"
-                            style="width: 24px; height: 24px; border-radius: 4px;">
-                        <div><strong>الباحث الحديثي:</strong> بحث في الأحاديث النبوية</div>
+                    <div class="project-item">
+                        <img src="https://sunnah.one/app.png" alt="الباحث الحديثي">
+                        <div><strong>الباحث الحديثي</strong><br>بحث في الأحاديث</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://app.turath.io/app.png" alt="تراث"
-                            style="width: 24px; height: 24px; border-radius: 4px;">
-                        <div><strong>تراث:</strong> مكتبة شاملة عالية الجودة</div>
+                    <div class="project-item">
+                        <img src="https://app.turath.io/app.png" alt="تراث">
+                        <div><strong>تراث</strong><br>مكتبة شاملة</div>
                     </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <img src="https://faidah.app/app.png" alt="فائدة"
-                            style="width: 24px; height: 24px; border-radius: 4px;">
-                        <div><strong>فائدة:</strong> تعليم ممتع دون ضياع الوقت</div>
+                    <div class="project-item">
+                        <img src="https://faidah.app/app.png" alt="فائدة">
+                        <div><strong>فائدة</strong><br>تعليم ممتع</div>
                     </div>
                 </div>
-
+                <p class="project-link">
+                    اكتشف المزيد: <a href="https://nuqayah.com/projects">nuqayah.com/projects</a>
+                </p>
             </div>
-            <p style="margin: 15px 0 0 0; font-size: 13px; color: #666;">
-                اكتشف المزيد من مشاريعنا على: <a href="https://nuqayah.com/projects"
-                    style="color: #667eea;">nuqayah.com/projects</a>
-            </p>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 نقاية - جميع الحقوق محفوظة</p>
+            <p>زيارة موقعنا: <a href="https://nuqayah.com/">nuqayah.com</a></p>
+            <div class="unsubscribe">
+                <p>لإلغاء الاشتراك: <a href="#">انقر هنا</a></p>
+            </div>
         </div>
     </div>
 
-    <div class="footer">
-        <p>© 2024 نقاية - جميع الحقوق محفوظة</p>
-        <p>زيارة موقعنا: <a href="https://nuqayah.com/">nuqayah.com</a></p>
 
-        <div class="unsubscribe">
-            <p>إذا كنت لا ترغب في تلقي هذه الرسائل، يمكنك <a href="#">إلغاء الاشتراك</a> في أي وقت.</p>
-        </div>
-    </div>
-    </div>
 </body>
 
 </html>
