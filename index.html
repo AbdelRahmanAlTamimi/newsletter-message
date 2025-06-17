@@ -1,58 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تأكيد الاشتراك - نقاية</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <base target="_blank">
     <style>
-        @font-face {
-            font-family: Kitab;
-            src: url(https://fonts.nuqayah.com/kitab-base.woff2?v4);
-        }
-
-        @font-face {
-            font-family: Kitab;
-            src: url(https://fonts.nuqayah.com/kitab-base-bold.woff2?v4);
-            font-weight: 700;
-        }
-
-        html {
-            font-size: 22px;
-            line-height: 1.75;
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-            padding-top: env(safe-area-inset-top, 0px);
-        }
-
-        @media (max-width: 992px) {
-            html {
-                font-size: 21px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            html {
-                font-size: 19px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            html {
-                font-size: 18px;
-            }
-        }
-
-        * {
-            padding: 0;
-            margin: 0;
-        }
-
         body {
-            font-family: Kitab, sans-serif;
+            font-family: Tahoma, Arial, sans-serif;
             direction: rtl;
+            background-color: #F0F1F3;
+            font-size: 15px;
+            line-height: 26px;
+            margin: 0;
+            color: #444;
         }
 
-        .container {
+        .wrap {
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
@@ -61,190 +25,294 @@
             overflow: hidden;
         }
 
+        .gutter {
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            margin-top: 15px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
         .logo-section {
-            padding: 30px 30px 20px 30px;
+            padding: 20px 20px 10px;
             text-align: center;
             background-color: #ffffff;
         }
 
         .logo-section img {
-            max-width: 80px;
+            max-width: 100px;
             height: auto;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
-        .content {
-            padding: 50px 30px;
+        .title-border {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5rem;
+            margin: 5px 0 15px;
+        }
+
+        .title-border span {
+            padding-bottom: 0.5rem;
+            display: inline-block;
+            border-bottom: 2px solid #0e8f63;
+        }
+
+        .content-section {
+            padding: 10px 25px 20px;
             color: #333;
             text-align: center;
         }
 
-        .main-message {
-            font-size: 24px;
+        .main-heading {
+            font-size: 22px;
             font-weight: bold;
             color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .cta-button {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .cta-button a {
+            display: inline-block;
+            background: #0e8f63;
+            color: #ffffff !important;
+            padding: 12px 40px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 3px 10px rgba(14, 143, 99, 0.2);
+        }
+
+        .sub-message {
+            font-size: 15px;
+            color: #555;
             margin-bottom: 20px;
             line-height: 1.4;
         }
 
-        .sub-message {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 40px;
-            line-height: 1.5;
+        .info-alert {
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+            margin: 15px 0;
+            text-align: right;
+            font-size: 13px;
+        }
+
+        .alert-text {
+            line-height: 1.4;
+            display: block;
         }
 
         .projects-section {
-            margin-top: 40px;
-            padding: 25px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            border-top: 4px solid oklch(0.527 0.154 150.069);
+            margin-top: 25px;
+            padding: 15px 8px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
 
-        .projects-title {
+        .section-title {
             color: #2c3e50;
-            margin: 0 0 20px 0;
+            margin: 0 0 15px 0;
             font-size: 18px;
             font-weight: bold;
             text-align: center;
         }
 
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            font-size: 14px;
+        .projects-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
         }
 
-        .project-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 8px;
+        .project-cell {
+            width: 50%;
+            vertical-align: top;
+            min-width: 120px;
         }
 
-        .project-item img {
-            width: 28px;
-            height: 28px;
+        .project-card {
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            padding: 12px 8px;
+            text-align: center;
+            height: 120px;
+        }
+
+        .project-icon {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 8px;
             border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
         }
 
-        .project-link {
-            margin: 20px 0 0 0;
+        .project-name {
+            display: block;
+            font-size: 15px;
+            color: #2c3e50;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .project-desc {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .projects-link {
+            margin: 15px 0 5px;
             font-size: 13px;
-            color: #666;
+            color: #64748b;
             text-align: center;
         }
 
-        .project-link a {
-            color: #667eea;
+        .projects-link a {
+            color: #0e8f63;
             text-decoration: none;
             font-weight: 600;
         }
 
-        @media (max-width: 480px) {
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .main-message {
-                font-size: 20px;
-            }
-
-            .logo-section img {
-                max-width: 60px;
-            }
+        /* Store Links */
+        .store-links {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 8px;
+            margin: 20px 0;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
         }
 
-        .title-border.active {
+        .store-cell {
+            width: 50%;
             text-align: center;
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.75rem;
+            padding: 0;
         }
 
-        .title-border.active span {
-            padding-bottom: 0.625rem;
-            display: inline-block;
-            border-bottom: 2px solid #10b981;
-        }
-
-        .cta-wrapper {
-            text-align: center;
-            margin: 40px 0;
-        }
-
-        .cta-btn {
-            display: inline-block;
-            background: oklch(0.527 0.154 150.069);
-            color: #ffffff;
-            padding: 16px 48px;
+        .store-link {
+            display: block;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 8px 10px;
+            color: #2c3e50;
             text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 16px;
-            box-shadow: 0 4px 16px rgba(21, 128, 61, 0.2);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
+            font-size: 13px;
+        }
+
+        .spacer {
+            width: 10px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="logo-section">
-            <img src="https://nuqayah.com/nuqayah.svg" alt="شعار نقاية">
-        </div>
-        <p class="title-border active">
-            <span>نسعى لنقدم أنفع التطبيقات والمواقع لكل مسلم</span>
-        </p>
-
-        <div class="content">
-            <div class="main-message">
-                نحن جاهزون لمشاركة محتوى مفيد معك!
+    <div class="wrap">
+        <div class="gutter">
+            <div class="logo-section">
+                <img src="https://files.nuqayah.com/nuqayah-site/img/nuqayah.png" alt="شعار نقاية">
             </div>
-
-            <div class="sub-message">
-                بعد فترة من العمل على تحسين خدماتنا وتطوير منتجاتنا،<br>
-                نود التأكد من رغبتك في الاستمرار بتلقي آخر أخبارنا
-            </div>
-
-            <div class="cta-wrapper">
-                <a href="#" class="cta-btn">تأكيد الاشتراك</a>
-            </div>
-
-            <div class="projects-section">
-                <h3 class="projects-title">تعرف على مشاريعنا</h3>
-                <div class="projects-grid">
-                    <div class="project-item">
-                        <img src="https://tafsir.app/app.png" alt="الباحث القرآني">
-                        <div><strong>الباحث القرآني</strong><br>تفسير وقراءات</div>
-                    </div>
-                    <div class="project-item">
-                        <img src="https://sunnah.one/app.png" alt="الباحث الحديثي">
-                        <div><strong>الباحث الحديثي</strong><br>بحث سريع في السنة</div>
-                    </div>
-                    <div class="project-item">
-                        <img src="https://app.turath.io/app.png" alt="تراث">
-                        <div><strong>تراث</strong><br> لقراءة تراث علمائنا</div>
-                    </div>
-                    <div class="project-item">
-                        <img src="https://faidah.app/app.png" alt="فائدة">
-                        <div><strong>فائدة</strong><br> استفد، دون أن يكون ضيق الوقت عائقًا</div>
-                    </div>
+            <div class="content-section">
+                <div class="cta-button">
+                    <a href="{{ .OptinURL }}l=187d9891-c103-401f-9161-e4e4ada92a09">تأكيد الاشتراك بالنشرة البريدية</a>
                 </div>
-                <p class="project-link">
-                    اكتشف المزيد: <a href="https://nuqayah.com/projects">nuqayah.com/projects</a>
-                </p>
+
+
+
+                <div class="info-alert">
+                    <span class="alert-text" style="font-weight: bold;">لماذا تلقيت هذا البريد؟</span>
+                    <span class="alert-text" style="display: block; margin-top: 5px;">
+                        لأنك سجلت بريدك الإلكتروني للاشتراك في نشرتنا الإخبارية سابقاً. إذا كنت لا ترغب في الاستمرار
+                        بالاشتراك، يمكنك
+                        تجاهل هذا البريد.
+                    </span>
+                </div>
+
+                <div class="projects-section">
+                    <h3 class="section-title"> من مشاريعنا</h3>
+
+                    <table class="projects-table">
+                        <tr>
+                            <td class="project-cell">
+                                <div class="project-card">
+                                    <img src="https://tafsir.app/app.png" alt="الباحث القرآني" class="project-icon">
+                                    <div class="project-name">الباحث القرآني</div>
+                                    <div class="project-desc">تفسير وقراءات</div>
+                                </div>
+                            </td>
+                            <td class="project-cell">
+                                <div class="project-card">
+                                    <img src="https://sunnah.one/app.png" alt="الباحث الحديثي" class="project-icon">
+                                    <div class="project-name">الباحث الحديثي</div>
+                                    <div class="project-desc">بحث سريع في السنة</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="project-cell">
+                                <div class="project-card">
+                                    <img src="https://app.turath.io/app.png" alt="تراث" class="project-icon">
+                                    <div class="project-name">تراث</div>
+                                    <div class="project-desc">لقراءة تراث علمائنا</div>
+                                </div>
+                            </td>
+                            <td class="project-cell">
+                                <div class="project-card">
+                                    <img src="https://read.tafsir.one/app.png" alt="التفسير التفاعلي"
+                                        class="project-icon">
+                                    <div class="project-name">التفسير التفاعلي</div>
+                                    <div class="project-desc">استمع إلى أربعة تفاسير</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <p class="projects-link">
+                        اكتشف المزيد: <a href="{{ TrackLink " https://nuqayah.com/projects" }}">nuqayah.com/projects</a>
+                    </p>
+                </div>
+
+                <table class="store-links">
+                    <tr>
+                        <td class="store-cell">
+                            <a href="{{ TrackLink " https://apps.apple.com/developer/id1441208782" }}"
+                                class="store-link">
+                                <span> تطبيقاتنا على متجر آبل</span>
+                            </a>
+                        </td>
+                        <td class="spacer">&nbsp;</td>
+                        <td class="store-cell">
+                            <a href="{{ TrackLink " https://play.google.com/store/apps/developer?id=نُقاية" }}"
+                                class="store-link">
+                                <span>تطبيقاتنا على متجر بلاي</span>
+                            </a>
+                        </td>
+                    </tr>
+                </table>
             </div>
+
         </div>
-
-
     </div>
 </body>
 
